@@ -16,6 +16,8 @@ import am.victor.newsapp.fragments.dummy.DummyContent.DummyItem
 import am.victor.newsapp.models.NewsItem
 import am.victor.newsapp.viewmodels.SharedViewModel
 import am.victor.newsappkotlin.R
+import am.victor.newsappkotlin.activities.NewsDetailsActivity
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 
 
@@ -36,6 +38,7 @@ class NewsFragment : Fragment() {
     private var mColumnCount = 1
     private var mListener: OnListFragmentInteractionListener? = null
     private lateinit var sharedViewModel: SharedViewModel
+    private lateinit var newsRecyclerViewAdapter: NewsRecyclerViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,10 +49,10 @@ class NewsFragment : Fragment() {
             mColumnCount = arguments.getInt(ARG_COLUMN_COUNT)
         }
 
-        sharedViewModel = activity?.run {
-            ViewModelProviders.of(this).get(SharedViewModel::class.java)
-        } ?: throw Exception("Invalid Activity")
-
+        sharedViewModel  = ViewModelProviders.of(this).get(SharedViewModel::class.java)
+        sharedViewModel.getUsers().observe(this, Observer<List<DummyItem>>{ _ ->
+            newsRecyclerViewAdapter.notifyDataSetChanged()
+        })
     }
 
     override fun onCreateView(
@@ -64,14 +67,12 @@ class NewsFragment : Fragment() {
             val context = view.getContext()
             val recyclerView = view
             recyclerView.setLayoutManager(LinearLayoutManager(context))
-            recyclerView.setAdapter(
-                NewsRecyclerViewAdapter(
-                    DummyContent.ITEMS,
-                    mListener,
-                    { newsItem: DummyItem -> newsItemClicked(newsItem) }
-                )
+            newsRecyclerViewAdapter = NewsRecyclerViewAdapter(
+                DummyContent.ITEMS,
+                mListener,
+                { newsItem: DummyItem -> newsItemClicked(newsItem) }
             )
-
+            recyclerView.adapter = newsRecyclerViewAdapter
         }
         return view
     }
@@ -121,6 +122,7 @@ class NewsFragment : Fragment() {
     }
 
     private fun newsItemClicked(newsItem: DummyItem){
-
+        val detailIntent = NewsDetailsActivity.newIntent(activity!!.baseContext, newsItem)
+        startActivity(detailIntent)
     }
 }

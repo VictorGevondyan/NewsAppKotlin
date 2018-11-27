@@ -13,7 +13,11 @@ import android.view.ViewGroup
 import am.victor.newsapp.adapters.NewsRecyclerViewAdapter
 import am.victor.newsapp.fragments.dummy.DummyContent
 import am.victor.newsapp.fragments.dummy.DummyContent.DummyItem
+import am.victor.newsapp.viewmodels.SharedViewModel
 import am.victor.newsappkotlin.R
+import am.victor.newsappkotlin.activities.NewsDetailsActivity
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 
 /**
  * A fragment representing a list of Items.
@@ -30,6 +34,8 @@ class SavedNewsFragment : Fragment() {
     // TODO: Customize parameters
     private var mColumnCount = 1
     private var mListener: OnListFragmentInteractionListener? = null
+    private lateinit var sharedViewModel: SharedViewModel
+    private lateinit var newsRecyclerViewAdapter: NewsRecyclerViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +44,12 @@ class SavedNewsFragment : Fragment() {
         if (arguments != null) {
             mColumnCount = arguments.getInt(ARG_COLUMN_COUNT)
         }
+
+        sharedViewModel = ViewModelProviders.of(this).get(SharedViewModel::class.java)
+        sharedViewModel.getUsers().observe(this, Observer<List<DummyItem>> { _ ->
+            newsRecyclerViewAdapter.notifyDataSetChanged()
+        })
+
     }
 
     override fun onCreateView(
@@ -51,16 +63,13 @@ class SavedNewsFragment : Fragment() {
         if (view is RecyclerView) {
             val context = view.getContext()
             val recyclerView = view as RecyclerView
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(LinearLayoutManager(context))
-            } else {
-                recyclerView.setLayoutManager(GridLayoutManager(context, mColumnCount))
-            }
-            recyclerView.adapter = NewsRecyclerViewAdapter(
+            recyclerView.setLayoutManager(LinearLayoutManager(context))
+            newsRecyclerViewAdapter = NewsRecyclerViewAdapter(
                 DummyContent.ITEMS,
-                null,  // TODO: Change this later
+                null, // TODO: Change this later
                 { newsItem: DummyItem -> newsItemClicked(newsItem) }
             )
+            recyclerView.adapter = newsRecyclerViewAdapter
         }
         return view
     }
@@ -109,7 +118,8 @@ class SavedNewsFragment : Fragment() {
         }
     }
 
-    private fun newsItemClicked(newsItem: DummyItem){
-
+    private fun newsItemClicked(newsItem: DummyItem) {
+        val detailIntent = NewsDetailsActivity.newIntent(activity!!.baseContext, newsItem)
+        startActivity(detailIntent)
     }
 }
