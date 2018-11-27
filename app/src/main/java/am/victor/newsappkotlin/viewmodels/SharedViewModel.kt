@@ -1,5 +1,6 @@
 package am.victor.newsapp.viewmodels
 
+import am.victor.newsapp.fragments.dummy.DummyContent
 import am.victor.newsapp.models.NewsItem
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
@@ -10,11 +11,11 @@ import android.arch.lifecycle.ViewModel
  */
 class SharedViewModel: ViewModel() {
 
-    private lateinit var newsList: MutableLiveData<List<NewsItem>>
+    private lateinit var newsList: MutableLiveData<List<DummyContent.DummyItem>>
 
-    val selected = MutableLiveData<NewsItem>()
+//    val selected = MutableLiveData<DummyContent.DummyItem>()
 
-    fun getUsers(): LiveData<List<NewsItem>> {
+    fun getUsers(): LiveData<List<DummyContent.DummyItem>> {
         if (!::newsList.isInitialized) {
             newsList = MutableLiveData()
             loadNews()
@@ -26,8 +27,8 @@ class SharedViewModel: ViewModel() {
         // Do an asynchronous operation to fetch users.
     }
 
-    fun select(item: NewsItem) {
-        selected.value = item
-    }
+//    fun select(item: DummyContent.DummyItem) {
+//        selected.value = item
+//    }
 
 }

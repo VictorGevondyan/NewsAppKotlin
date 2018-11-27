@@ -58,4 +58,8 @@ class NewsRecyclerViewAdapter(
         return newsList.size
     }
 
+    fun addItem(newsItem: DummyItem) {
+        newsList.add(newsItem)
+        notifyDataSetChanged()
+    }
 }
