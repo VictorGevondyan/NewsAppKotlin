@@ -3,7 +3,6 @@ package am.victor.newsapp.fragments
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -11,14 +10,25 @@ import android.view.View
 import android.view.ViewGroup
 
 import am.victor.newsapp.adapters.NewsRecyclerViewAdapter
+import am.victor.newsapp.api.NewsService
 import am.victor.newsapp.fragments.dummy.DummyContent
 import am.victor.newsapp.fragments.dummy.DummyContent.DummyItem
 import am.victor.newsapp.models.NewsItem
 import am.victor.newsapp.viewmodels.SharedViewModel
 import am.victor.newsappkotlin.R
 import am.victor.newsappkotlin.activities.NewsDetailsActivity
+import am.victor.newsappkotlin.models.NewsResponseWrapper
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.util.Log
+import retrofit2.Retrofit
+import com.google.gson.GsonBuilder
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.converter.gson.GsonConverterFactory
+import android.support.v7.widget.DividerItemDecoration
+
 
 
 
@@ -34,11 +44,13 @@ import android.arch.lifecycle.ViewModelProviders
  * fragment (e.g. upon screen orientation changes).
  */
 class NewsFragment : Fragment() {
+
     // TODO: Customize parameters
     private var mColumnCount = 1
     private var mListener: OnListFragmentInteractionListener? = null
     private lateinit var sharedViewModel: SharedViewModel
     private lateinit var newsRecyclerViewAdapter: NewsRecyclerViewAdapter
+    private lateinit var newsResponseWrapper: NewsResponseWrapper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,10 +61,12 @@ class NewsFragment : Fragment() {
             mColumnCount = arguments.getInt(ARG_COLUMN_COUNT)
         }
 
-        sharedViewModel  = ViewModelProviders.of(this).get(SharedViewModel::class.java)
-        sharedViewModel.getUsers().observe(this, Observer<List<DummyItem>>{ _ ->
+        sharedViewModel = ViewModelProviders.of(this).get(SharedViewModel::class.java)
+        sharedViewModel.getUsers().observe(this, Observer<List<DummyItem>> { _ ->
             newsRecyclerViewAdapter.notifyDataSetChanged()
         })
+
+        makeAPICall()
     }
 
     override fun onCreateView(
@@ -66,14 +80,21 @@ class NewsFragment : Fragment() {
         if (view is RecyclerView) {
             val context = view.getContext()
             val recyclerView = view
-            recyclerView.setLayoutManager(LinearLayoutManager(context))
+            recyclerView.addItemDecoration(
+                DividerItemDecoration(
+                    context,
+                    DividerItemDecoration.VERTICAL
+                )
+            )
+            var initialList = arrayListOf<NewsItem>()
             newsRecyclerViewAdapter = NewsRecyclerViewAdapter(
-                DummyContent.ITEMS,
+                initialList,
                 mListener,
-                { newsItem: DummyItem -> newsItemClicked(newsItem) }
+                { newsItem: NewsItem -> newsItemClicked(newsItem) }
             )
             recyclerView.adapter = newsRecyclerViewAdapter
         }
+
         return view
     }
 
@@ -121,8 +142,39 @@ class NewsFragment : Fragment() {
         }
     }
 
-    private fun newsItemClicked(newsItem: DummyItem){
+    private fun newsItemClicked(newsItem: NewsItem) {
         val detailIntent = NewsDetailsActivity.newIntent(activity!!.baseContext, newsItem)
         startActivity(detailIntent)
     }
+
+    fun makeAPICall() {
+
+        val gson = GsonBuilder()
+            .setLenient()
+            .create()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://api.github.com/")
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+
+        val service = retrofit.create(NewsService::class.java!!)
+        val newsCall = service.getNews()
+        newsCall.enqueue(object : Callback<NewsResponseWrapper> {
+            override fun onFailure(call: Call<NewsResponseWrapper>?, t: Throwable?) {
+                Log.d("News call Failure", t.toString())
+            }
+
+            override fun onResponse(
+                call: Call<NewsResponseWrapper>?,
+                response: Response<NewsResponseWrapper>?
+            ) {
+                newsResponseWrapper = response?.body()!!
+                newsRecyclerViewAdapter.addAll(newsResponseWrapper.newsList)
+            }
+
+        })
+
+    }
+
 }

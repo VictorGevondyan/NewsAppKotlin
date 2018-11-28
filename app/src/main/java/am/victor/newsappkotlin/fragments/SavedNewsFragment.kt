@@ -11,13 +11,23 @@ import android.view.View
 import android.view.ViewGroup
 
 import am.victor.newsapp.adapters.NewsRecyclerViewAdapter
+import am.victor.newsapp.api.NewsService
 import am.victor.newsapp.fragments.dummy.DummyContent
 import am.victor.newsapp.fragments.dummy.DummyContent.DummyItem
+import am.victor.newsapp.models.NewsItem
 import am.victor.newsapp.viewmodels.SharedViewModel
 import am.victor.newsappkotlin.R
 import am.victor.newsappkotlin.activities.NewsDetailsActivity
+import am.victor.newsappkotlin.models.NewsResponseWrapper
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.util.Log
+import com.google.gson.GsonBuilder
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 /**
  * A fragment representing a list of Items.
@@ -36,6 +46,8 @@ class SavedNewsFragment : Fragment() {
     private var mListener: OnListFragmentInteractionListener? = null
     private lateinit var sharedViewModel: SharedViewModel
     private lateinit var newsRecyclerViewAdapter: NewsRecyclerViewAdapter
+    private lateinit var newsResponseWrapper: NewsResponseWrapper
+    private lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +62,8 @@ class SavedNewsFragment : Fragment() {
             newsRecyclerViewAdapter.notifyDataSetChanged()
         })
 
+        makeAPICall()
+
     }
 
     override fun onCreateView(
@@ -62,12 +76,13 @@ class SavedNewsFragment : Fragment() {
         // Set the adapter
         if (view is RecyclerView) {
             val context = view.getContext()
-            val recyclerView = view as RecyclerView
+            recyclerView = view
             recyclerView.setLayoutManager(LinearLayoutManager(context))
+            var initialList = arrayListOf<NewsItem>()
             newsRecyclerViewAdapter = NewsRecyclerViewAdapter(
-                DummyContent.ITEMS,
-                null, // TODO: Change this later
-                { newsItem: DummyItem -> newsItemClicked(newsItem) }
+                initialList,
+                null,
+                { newsItem: NewsItem -> newsItemClicked(newsItem) }
             )
             recyclerView.adapter = newsRecyclerViewAdapter
         }
@@ -95,7 +110,7 @@ class SavedNewsFragment : Fragment() {
      * to the activity and potentially other fragments contained in that
      * activity.
      *
-     *
+     *DummyContent.DummyItem
      * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
      */
     interface OnListFragmentInteractionListener {
@@ -118,8 +133,39 @@ class SavedNewsFragment : Fragment() {
         }
     }
 
-    private fun newsItemClicked(newsItem: DummyItem) {
+    private fun newsItemClicked(newsItem: NewsItem) {
         val detailIntent = NewsDetailsActivity.newIntent(activity!!.baseContext, newsItem)
         startActivity(detailIntent)
     }
+
+    fun makeAPICall() {
+
+        val gson = GsonBuilder()
+            .setLenient()
+            .create()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://api.github.com/")
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+
+        val service = retrofit.create(NewsService::class.java!!)
+        val newsCall = service.getNews()
+        newsCall.enqueue(object : Callback<NewsResponseWrapper> {
+            override fun onFailure(call: Call<NewsResponseWrapper>?, t: Throwable?) {
+                Log.d("News call Failure", t.toString())
+            }
+
+            override fun onResponse(
+                call: Call<NewsResponseWrapper>?,
+                response: Response<NewsResponseWrapper>?
+            ) {
+                newsResponseWrapper = response?.body()!!
+                newsRecyclerViewAdapter.addAll(newsResponseWrapper.newsList)
+            }
+
+        })
+
+    }
+
 }

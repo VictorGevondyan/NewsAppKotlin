@@ -17,13 +17,13 @@ class NewsDetailsActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_TITLE = "title"
-        const val EXTRA_TEXT = "text"
+        const val EXTRA_TEXT = "content"
 
-        fun newIntent(context: Context, newsItem: DummyContent.DummyItem): Intent {
+        fun newIntent(context: Context, newsItem: NewsItem): Intent {
             val detailIntent = Intent(context, NewsDetailsActivity::class.java)
 
-            detailIntent.putExtra(EXTRA_TITLE, newsItem.id)
-            detailIntent.putExtra(EXTRA_TEXT, newsItem.details)
+            detailIntent.putExtra(EXTRA_TITLE, newsItem.title)
+            detailIntent.putExtra(EXTRA_TEXT, newsItem.content)
 
             return detailIntent
         }
