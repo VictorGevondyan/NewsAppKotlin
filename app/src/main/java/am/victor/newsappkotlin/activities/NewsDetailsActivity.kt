@@ -7,12 +7,23 @@ import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.TextView
 
 class NewsDetailsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_news_details)
+
+        val titleTextView = findViewById<TextView>(R.id.title)
+        val contentTextView = findViewById<TextView>(R.id.content)
+
+        val incomingIntent = intent
+        val titleString = incomingIntent.getStringExtra(EXTRA_TITLE)
+        val contentString = incomingIntent.getStringExtra(EXTRA_TEXT)
+
+        titleTextView.text = titleString
+        contentTextView.text = contentString
     }
 
     companion object {

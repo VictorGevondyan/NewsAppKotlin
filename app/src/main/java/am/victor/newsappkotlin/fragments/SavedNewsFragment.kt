@@ -21,6 +21,7 @@ import am.victor.newsappkotlin.activities.NewsDetailsActivity
 import am.victor.newsappkotlin.models.NewsResponseWrapper
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.support.v7.widget.DividerItemDecoration
 import android.util.Log
 import com.google.gson.GsonBuilder
 import retrofit2.Call
@@ -47,7 +48,6 @@ class SavedNewsFragment : Fragment() {
     private lateinit var sharedViewModel: SharedViewModel
     private lateinit var newsRecyclerViewAdapter: NewsRecyclerViewAdapter
     private lateinit var newsResponseWrapper: NewsResponseWrapper
-    private lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,7 +76,13 @@ class SavedNewsFragment : Fragment() {
         // Set the adapter
         if (view is RecyclerView) {
             val context = view.getContext()
-            recyclerView = view
+            val recyclerView = view
+            recyclerView.addItemDecoration(
+                DividerItemDecoration(
+                    context,
+                    DividerItemDecoration.VERTICAL
+                )
+            )
             recyclerView.setLayoutManager(LinearLayoutManager(context))
             var initialList = arrayListOf<NewsItem>()
             newsRecyclerViewAdapter = NewsRecyclerViewAdapter(
@@ -145,7 +151,7 @@ class SavedNewsFragment : Fragment() {
             .create()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://api.github.com/")
+            .baseUrl("https://newsapi.org/")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 

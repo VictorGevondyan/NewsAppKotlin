@@ -98,7 +98,6 @@ class NewsFragment : Fragment() {
         return view
     }
 
-
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         if (context is OnListFragmentInteractionListener) {
@@ -154,7 +153,7 @@ class NewsFragment : Fragment() {
             .create()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://api.github.com/")
+            .baseUrl("https://newsapi.org/")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 

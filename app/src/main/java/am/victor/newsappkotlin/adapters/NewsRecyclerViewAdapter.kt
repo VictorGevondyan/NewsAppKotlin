@@ -7,19 +7,16 @@ import android.view.ViewGroup
 import android.widget.TextView
 
 import am.victor.newsapp.fragments.NewsFragment.OnListFragmentInteractionListener
-import am.victor.newsapp.fragments.dummy.DummyContent.DummyItem
 import am.victor.newsapp.models.NewsItem
 import am.victor.newsappkotlin.R
 
 /**
- * [RecyclerView.Adapter] that can display a [DummyItem] and makes a call to the
- * specified [OnListFragmentInteractionListener].
- * TODO: Replace the implementation with code for your data type.
+ * [RecyclerView.Adapter] that can display a [NewsItem]
  */
 class NewsRecyclerViewAdapter(
-    private val newsList: MutableList<DummyItem>,
+    private var newsList: MutableList<NewsItem>,
     private val mListener: OnListFragmentInteractionListener?,
-    val onNewsItemClickListener: (DummyItem) -> Unit
+    val onNewsItemClickListener: (NewsItem) -> Unit
 ) : RecyclerView.Adapter<NewsRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -41,11 +38,11 @@ class NewsRecyclerViewAdapter(
             mContentView = mView.findViewById(R.id.content) as TextView
         }
 
-        fun bind(dummyItem: DummyItem, onNewsItemClickListener: (DummyItem) -> Unit) {
-            mIdView.text = dummyItem.id
-            mContentView.text = dummyItem.content
+        fun bind(newsItem: NewsItem, onNewsItemClickListener: (NewsItem) -> Unit) {
+            mIdView.text = newsItem.title
+            mContentView.text = newsItem.publishedAt
             mView.setOnClickListener {
-                onNewsItemClickListener(dummyItem)
+                onNewsItemClickListener(newsItem)
             }
         }
 
@@ -58,8 +55,8 @@ class NewsRecyclerViewAdapter(
         return newsList.size
     }
 
-    fun addItem(newsItem: DummyItem) {
-        newsList.add(newsItem)
+    fun addAll( updatedNewsList: MutableList<NewsItem> ) {
+        newsList = updatedNewsList
         notifyDataSetChanged()
     }
 }
