@@ -18,6 +18,8 @@ import am.victor.newsapp.viewmodels.SharedViewModel
 import am.victor.newsappkotlin.R
 import am.victor.newsappkotlin.activities.NewsDetailsActivity
 import am.victor.newsappkotlin.models.NewsResponseWrapper
+import am.victor.newsappkotlin.repositories.NewsRepository
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.util.Log
@@ -66,7 +68,12 @@ class NewsFragment : Fragment() {
             newsRecyclerViewAdapter.notifyDataSetChanged()
         })
 
-        makeAPICall()
+        val newsRepository = NewsRepository(activity!!.baseContext)
+        val newsService = newsRepository.newsService
+        val newsDatabase = newsRepository.newsDatabase
+        val newsDao = newsDatabase.newsDao()
+        val response = newsRepository.getNews()
+        Log.d("jjl", "djskd")
     }
 
     override fun onCreateView(
@@ -144,36 +151,6 @@ class NewsFragment : Fragment() {
     private fun newsItemClicked(newsItem: NewsItem) {
         val detailIntent = NewsDetailsActivity.newIntent(activity!!.baseContext, newsItem)
         startActivity(detailIntent)
-    }
-
-    fun makeAPICall() {
-
-        val gson = GsonBuilder()
-            .setLenient()
-            .create()
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://newsapi.org/")
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build()
-
-        val service = retrofit.create(NewsService::class.java!!)
-        val newsCall = service.getNews()
-        newsCall.enqueue(object : Callback<NewsResponseWrapper> {
-            override fun onFailure(call: Call<NewsResponseWrapper>?, t: Throwable?) {
-                Log.d("News call Failure", t.toString())
-            }
-
-            override fun onResponse(
-                call: Call<NewsResponseWrapper>?,
-                response: Response<NewsResponseWrapper>?
-            ) {
-                newsResponseWrapper = response?.body()!!
-                newsRecyclerViewAdapter.addAll(newsResponseWrapper.newsList)
-            }
-
-        })
-
     }
 
 }
