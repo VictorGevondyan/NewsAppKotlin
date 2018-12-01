@@ -71,7 +71,7 @@ class SavedNewsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater!!.inflate(R.layout.fragment_news_list, container, false)
+        val view = inflater.inflate(R.layout.fragment_news_list, container, false)
 
         // Set the adapter
         if (view is RecyclerView) {
@@ -155,7 +155,7 @@ class SavedNewsFragment : Fragment() {
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 
-        val service = retrofit.create(NewsService::class.java!!)
+        val service = retrofit.create(NewsService::class.java)
         val newsCall = service.getNews()
         newsCall.enqueue(object : Callback<NewsResponseWrapper> {
             override fun onFailure(call: Call<NewsResponseWrapper>?, t: Throwable?) {
