@@ -1,12 +1,7 @@
-package am.victor.newsappkotlin.di.components
+package am.victor.newsappkotlin.di
 
-import am.victor.newsappkotlin.NewsApplication
-import am.victor.newsappkotlin.di.modules.AppModule
 import am.victor.newsappkotlin.repositories.NewsRepository
-import android.app.Application
-import dagger.BindsInstance
 import dagger.Component
-import dagger.android.AndroidInjectionModule
 import javax.inject.Singleton
 
 /**

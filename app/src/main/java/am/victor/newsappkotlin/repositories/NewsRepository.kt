@@ -1,13 +1,10 @@
 package am.victor.newsappkotlin.repositories
 
 import am.victor.newsapp.api.NewsService
-import am.victor.newsappkotlin.NewsApplication
-import am.victor.newsappkotlin.db.NewsDao
 import am.victor.newsappkotlin.db.NewsDatabase
+import am.victor.newsappkotlin.db.RoomNewsItem
 import am.victor.newsappkotlin.di.components.DaggerAppComponent
-import am.victor.newsappkotlin.di.components.DaggerNewsServiceComponent
-import am.victor.newsappkotlin.di.components.DaggerRoomComponent
-import am.victor.newsappkotlin.di.modules.AppModule
+import am.victor.newsappkotlin.di.AppModule
 import am.victor.newsappkotlin.models.NewsResponseWrapper
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.LiveData
@@ -18,13 +15,12 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.concurrent.Executor
 import javax.inject.Inject
-import javax.inject.Singleton
 
 
 /**
  * Created by victor on 11/29/18.
  */
-class NewsRepository (context: Context)/*@Inject constructor(newsService: NewsService, newsDatabase: NewsDatabase)*/ {
+class NewsRepository(context: Context) {
 
     @Inject
     lateinit var newsService: NewsService
@@ -35,8 +31,6 @@ class NewsRepository (context: Context)/*@Inject constructor(newsService: NewsSe
     private val executor: Executor? = null
 
     init {
-//        DaggerNewsServiceComponent.create().inject(this)
-//        DaggerRoomComponent.create().inject(this)
         DaggerAppComponent.builder()
             .appModule(AppModule(context))
             .build()
@@ -59,6 +53,8 @@ class NewsRepository (context: Context)/*@Inject constructor(newsService: NewsSe
                 response: Response<NewsResponseWrapper>?
             ) {
                 data.setValue(response?.body())
+                RoomNewsItem roomNewsItem =
+                newsDatabase.newsDao().save(response.body().newsList.get(0))
             }
 
         })

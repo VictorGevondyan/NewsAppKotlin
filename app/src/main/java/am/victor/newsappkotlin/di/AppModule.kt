@@ -1,9 +1,7 @@
-package am.victor.newsappkotlin.di.modules
+package am.victor.newsappkotlin.di
 
 import am.victor.newsapp.api.NewsService
-import am.victor.newsappkotlin.NewsApplication
 import am.victor.newsappkotlin.db.NewsDatabase
-import android.app.Application
 import android.arch.persistence.room.Room
 import android.content.Context
 import com.google.gson.GsonBuilder
