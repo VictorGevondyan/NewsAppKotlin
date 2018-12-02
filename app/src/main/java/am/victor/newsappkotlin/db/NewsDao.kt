@@ -15,6 +15,9 @@ interface NewsDao {
     @Insert(onConflict = REPLACE)
     fun save(newsItem: RoomNewsItem)
 
-    @Query("SELECT * FROM RoomNewsItem WHERE id = :newsId")
-    fun load(newsId: Int): LiveData<RoomNewsItem>
+    @Query("SELECT * FROM roomnewsitem WHERE id = :newsId")
+    fun load(newsId: Int): RoomNewsItem
+
+    @Query("SELECT * FROM roomnewsitem)")
+    fun loadAll(): LiveData<List<RoomNewsItem>>
 }

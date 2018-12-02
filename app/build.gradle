@@ -61,4 +61,6 @@ dependencies {
     compile "com.google.dagger:dagger-android-support:$project.daggerVersion"
 
     annotationProcessor "com.google.dagger:dagger-android-processor:$daggerVersion"
+
+    debugImplementation 'com.amitshekhar.android:debug-db:1.0.4'
 }

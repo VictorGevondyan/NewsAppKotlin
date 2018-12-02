@@ -3,7 +3,6 @@ package am.victor.newsapp.fragments
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -12,13 +11,13 @@ import android.view.ViewGroup
 
 import am.victor.newsapp.adapters.NewsRecyclerViewAdapter
 import am.victor.newsapp.api.NewsService
-import am.victor.newsapp.fragments.dummy.DummyContent
 import am.victor.newsapp.fragments.dummy.DummyContent.DummyItem
 import am.victor.newsapp.models.NewsItem
-import am.victor.newsapp.viewmodels.SharedViewModel
+import am.victor.newsapp.viewmodels.NewsViewModel
 import am.victor.newsappkotlin.R
 import am.victor.newsappkotlin.activities.NewsDetailsActivity
 import am.victor.newsappkotlin.models.NewsResponseWrapper
+import am.victor.newsappkotlin.viewmodels.SavedNewsViewModel
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.support.v7.widget.DividerItemDecoration
@@ -45,7 +44,7 @@ class SavedNewsFragment : Fragment() {
     // TODO: Customize parameters
     private var mColumnCount = 1
     private var mListener: OnListFragmentInteractionListener? = null
-    private lateinit var sharedViewModel: SharedViewModel
+    private lateinit var newsViewModel: SavedNewsViewModel
     private lateinit var newsRecyclerViewAdapter: NewsRecyclerViewAdapter
     private lateinit var newsResponseWrapper: NewsResponseWrapper
 
@@ -57,8 +56,8 @@ class SavedNewsFragment : Fragment() {
             mColumnCount = arguments.getInt(ARG_COLUMN_COUNT)
         }
 
-        sharedViewModel = ViewModelProviders.of(this).get(SharedViewModel::class.java)
-        sharedViewModel.getUsers().observe(this, Observer<List<DummyItem>> { _ ->
+        newsViewModel = ViewModelProviders.of(this).get(SavedNewsViewModel::class.java)
+        newsViewModel.getSavedNews().observe(this, Observer<List<NewsItem>> { _ ->
             newsRecyclerViewAdapter.notifyDataSetChanged()
         })
 

@@ -3,32 +3,22 @@ package am.victor.newsapp.fragments
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
 import am.victor.newsapp.adapters.NewsRecyclerViewAdapter
-import am.victor.newsapp.api.NewsService
-import am.victor.newsapp.fragments.dummy.DummyContent
 import am.victor.newsapp.fragments.dummy.DummyContent.DummyItem
 import am.victor.newsapp.models.NewsItem
-import am.victor.newsapp.viewmodels.SharedViewModel
+import am.victor.newsapp.viewmodels.NewsViewModel
 import am.victor.newsappkotlin.R
 import am.victor.newsappkotlin.activities.NewsDetailsActivity
 import am.victor.newsappkotlin.models.NewsResponseWrapper
 import am.victor.newsappkotlin.repositories.NewsRepository
-import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.util.Log
-import retrofit2.Retrofit
-import com.google.gson.GsonBuilder
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.converter.gson.GsonConverterFactory
 import android.support.v7.widget.DividerItemDecoration
 
 
@@ -50,7 +40,7 @@ class NewsFragment : Fragment() {
     // TODO: Customize parameters
     private var mColumnCount = 1
     private var mListener: OnListFragmentInteractionListener? = null
-    private lateinit var sharedViewModel: SharedViewModel
+    private lateinit var newsViewModel: NewsViewModel
     private lateinit var newsRecyclerViewAdapter: NewsRecyclerViewAdapter
     private lateinit var newsResponseWrapper: NewsResponseWrapper
 
@@ -63,8 +53,8 @@ class NewsFragment : Fragment() {
             mColumnCount = arguments.getInt(ARG_COLUMN_COUNT)
         }
 
-        sharedViewModel = ViewModelProviders.of(this).get(SharedViewModel::class.java)
-        sharedViewModel.getUsers().observe(this, Observer<List<DummyItem>> { _ ->
+        newsViewModel = ViewModelProviders.of(this).get(NewsViewModel::class.java)
+        newsViewModel.getNews().observe(this, Observer<List<NewsItem>> { _ ->
             newsRecyclerViewAdapter.notifyDataSetChanged()
         })
 
