@@ -2,7 +2,6 @@ package am.victor.newsappkotlin;
 
 import android.app.Application;
 
-import am.victor.newsappkotlin.di.components.DaggerAppComponent;
 
 /**
  * Created by victor on 11/29/18.
