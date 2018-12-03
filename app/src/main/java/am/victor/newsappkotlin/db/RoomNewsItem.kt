@@ -12,8 +12,10 @@ import android.arch.persistence.room.PrimaryKey
 class RoomNewsItem{
 
     @PrimaryKey
-    var id: Int = 0
-    var title: String? = null
-    var content: String? = null
+    var id: String = ""
+    var title: String = ""
+    var urlToImage: String = ""
+    var publishedAt: String = ""
+    var content: String = ""
 
 }

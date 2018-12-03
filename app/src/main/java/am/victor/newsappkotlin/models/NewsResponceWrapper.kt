@@ -1,6 +1,8 @@
 package am.victor.newsappkotlin.models
 
 import am.victor.newsapp.models.NewsItem
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import com.google.gson.annotations.SerializedName
 
 /**
@@ -14,6 +16,5 @@ class NewsResponseWrapper {
     var totalResults:Int = 0
 
     @SerializedName("articles")
-    var newsList:MutableList<NewsItem>  = arrayListOf()
-
+    var newsList:List<NewsItem> = listOf()
 }

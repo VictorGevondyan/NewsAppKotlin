@@ -1,34 +1,33 @@
 package am.victor.newsapp.viewmodels
 
-import am.victor.newsapp.fragments.dummy.DummyContent
-import am.victor.newsapp.models.NewsItem
+import am.victor.newsappkotlin.di.AppModule
+import am.victor.newsappkotlin.di.DaggerAppComponent
+import am.victor.newsappkotlin.repositories.NewsRepository
 import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import android.content.Context
+import javax.inject.Inject
+
 
 /**
  * Created by victor on 11/26/18.
  */
-class NewsViewModel: ViewModel() {
+class NewsViewModel(context: Context, val areOnlineNews:Boolean): ViewModel() {
 
-    private lateinit var newsList: MutableLiveData<List<NewsItem>>
+    var newsObject: LiveData<Any>
 
-//    val selected = MutableLiveData<DummyContent.DummyItem>()
+    @Inject
+    lateinit var newsRepository: NewsRepository
 
-    fun getNews(): LiveData<List<NewsItem>> {
-        if (!::newsList.isInitialized) {
-            newsList = MutableLiveData()
-            loadNews()
-        }
-        return newsList
+    init {
+
+        DaggerAppComponent.builder()
+            .appModule(AppModule(context))
+            .build()
+            .inject(this);
+
+            newsObject = newsRepository.getNews(areOnlineNews)
+
     }
-
-    private fun loadNews() {
-        // Do an asynchronous operation to fetch users.
-    }
-
-/*    fun select(item: DummyContent.DummyItem) {
-        selected.value = item
-    }*/
 
 }

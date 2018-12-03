@@ -3,10 +3,7 @@
     <string name="app_name">NewsAppKotlin</string>
 
     <string name="news">News</string>
-    <string name="saved_news">SavedNews</string>
+    <string name="saved_news">Saved News</string>
     <string name="news_api_key">aa21eee618cd4f2cad012e0762542ff8</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

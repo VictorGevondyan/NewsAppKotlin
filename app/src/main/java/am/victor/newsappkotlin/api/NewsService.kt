@@ -15,8 +15,7 @@ interface NewsService{
 
     /**
      * @GET declares an HTTP GET request
-     * @Path("user") annotation on the userId parameter marks it as a
-     * replacement for the {user} placeholder in the @GET path
+     *
      */
     @GET("v2/top-headlines?country=us&apiKey=aa21eee618cd4f2cad012e0762542ff8")
     fun getNews(): Call<NewsResponseWrapper>

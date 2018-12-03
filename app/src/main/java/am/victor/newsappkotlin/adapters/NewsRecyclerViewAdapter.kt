@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 
-import am.victor.newsapp.fragments.NewsFragment.OnListFragmentInteractionListener
 import am.victor.newsapp.models.NewsItem
 import am.victor.newsappkotlin.R
 
@@ -14,8 +13,7 @@ import am.victor.newsappkotlin.R
  * [RecyclerView.Adapter] that can display a [NewsItem]
  */
 class NewsRecyclerViewAdapter(
-    private var newsList: MutableList<NewsItem>,
-    private val mListener: OnListFragmentInteractionListener?,
+    private var newsList: List<NewsItem>,
     val onNewsItemClickListener: (NewsItem) -> Unit
 ) : RecyclerView.Adapter<NewsRecyclerViewAdapter.ViewHolder>() {
 
@@ -55,7 +53,7 @@ class NewsRecyclerViewAdapter(
         return newsList.size
     }
 
-    fun addAll( updatedNewsList: MutableList<NewsItem> ) {
+    fun addAll( updatedNewsList:List<NewsItem> ) {
         newsList = updatedNewsList
         notifyDataSetChanged()
     }
