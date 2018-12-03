@@ -1,18 +1,17 @@
 package am.victor.newsapp.models
 
+import am.victor.newsappkotlin.models.NewsItemSource
+import com.google.gson.annotations.SerializedName
+
 /**
  * Created by victor on 11/26/18.
  */
 class NewsItem {
 
-
-    var author:String = ""
+    @SerializedName("source")
+    var newsSource: NewsItemSource? = null
 
     var title: String = ""
-
-    var description: String = ""
-
-    var url: String = ""
 
     var urlToImage: String = ""
 

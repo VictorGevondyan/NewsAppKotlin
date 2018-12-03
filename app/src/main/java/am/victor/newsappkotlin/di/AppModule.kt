@@ -1,7 +1,9 @@
 package am.victor.newsappkotlin.di
 
 import am.victor.newsapp.api.NewsService
+import am.victor.newsappkotlin.db.NewsDao
 import am.victor.newsappkotlin.db.NewsDatabase
+import am.victor.newsappkotlin.repositories.NewsRepository
 import android.arch.persistence.room.Room
 import android.content.Context
 import com.google.gson.GsonBuilder
@@ -20,7 +22,7 @@ class AppModule {
 
     var context: Context
 
-    constructor(context: Context){
+    constructor(context: Context) {
         this.context = context
     }
 
@@ -32,10 +34,16 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideNewsDatabase( context: Context): NewsDatabase {
+    fun provideNewsDatabase(context: Context): NewsDatabase {
         return Room.databaseBuilder(context, NewsDatabase::class.java, "NewsDatabase")
             .fallbackToDestructiveMigration()
-                .build()
+            .build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideNewsDao(db: NewsDatabase): NewsDao {
+        return db.newsDao()
     }
 
     @Provides
@@ -54,6 +62,12 @@ class AppModule {
         val newsService = retrofit.create(NewsService::class.java)
         return newsService
 
+    }
+
+    @Provides
+    @Singleton
+    fun provideNewsRepository(): NewsRepository {
+        return NewsRepository(context)
     }
 
 }

@@ -1,7 +1,6 @@
 package am.victor.newsapp.adapters
 
 import am.victor.newsapp.fragments.NewsFragment
-import am.victor.newsapp.fragments.SavedNewsFragment
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
@@ -17,8 +16,8 @@ class TabPagerAdapter(fm: FragmentManager, private var tabCount: Int) :
     override fun getItem(position: Int): Fragment? {
 
         when (position) {
-            0 -> return NewsFragment()
-            1 -> return SavedNewsFragment()
+            0 -> return NewsFragment.newInstance(true)
+            1 -> return NewsFragment.newInstance(false)
             else -> return null
         }
     }
@@ -26,4 +25,5 @@ class TabPagerAdapter(fm: FragmentManager, private var tabCount: Int) :
     override fun getCount(): Int {
         return tabCount
     }
+
 }

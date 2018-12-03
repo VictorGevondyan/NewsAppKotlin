@@ -1,27 +1,21 @@
 package am.victor.newsapp.fragments
 
-import android.content.Context
-import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-
 import am.victor.newsapp.adapters.NewsRecyclerViewAdapter
-import am.victor.newsapp.fragments.dummy.DummyContent.DummyItem
 import am.victor.newsapp.models.NewsItem
 import am.victor.newsapp.viewmodels.NewsViewModel
 import am.victor.newsappkotlin.R
 import am.victor.newsappkotlin.activities.NewsDetailsActivity
 import am.victor.newsappkotlin.models.NewsResponseWrapper
-import am.victor.newsappkotlin.repositories.NewsRepository
+import am.victor.newsappkotlin.viewmodels.NewsViewModelFactory
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
-import android.util.Log
+import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v7.widget.DividerItemDecoration
-
-
+import android.support.v7.widget.RecyclerView
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 
 
 /**
@@ -31,18 +25,11 @@ import android.support.v7.widget.DividerItemDecoration
  * Activities containing this fragment MUST implement the [OnListFragmentInteractionListener]
  * interface.
  */
-/**
- * Mandatory empty constructor for the fragment manager to instantiate the
- * fragment (e.g. upon screen orientation changes).
- */
 class NewsFragment : Fragment() {
 
-    // TODO: Customize parameters
-    private var mColumnCount = 1
-    private var mListener: OnListFragmentInteractionListener? = null
+    private var areOnlineNews = true
     private lateinit var newsViewModel: NewsViewModel
     private lateinit var newsRecyclerViewAdapter: NewsRecyclerViewAdapter
-    private lateinit var newsResponseWrapper: NewsResponseWrapper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,20 +37,8 @@ class NewsFragment : Fragment() {
         // To avoid "Smart cast is impossible"
         val arguments = arguments;
         if (arguments != null) {
-            mColumnCount = arguments.getInt(ARG_COLUMN_COUNT)
+            areOnlineNews = arguments.getBoolean(ARG_ONLINE_NEWS)
         }
-
-        newsViewModel = ViewModelProviders.of(this).get(NewsViewModel::class.java)
-        newsViewModel.getNews().observe(this, Observer<List<NewsItem>> { _ ->
-            newsRecyclerViewAdapter.notifyDataSetChanged()
-        })
-
-        val newsRepository = NewsRepository(activity!!.baseContext)
-        val newsService = newsRepository.newsService
-        val newsDatabase = newsRepository.newsDatabase
-        val newsDao = newsDatabase.newsDao()
-        val response = newsRepository.getNews()
-        Log.d("jjl", "djskd")
     }
 
     override fun onCreateView(
@@ -83,59 +58,56 @@ class NewsFragment : Fragment() {
                     DividerItemDecoration.VERTICAL
                 )
             )
-            var initialList = arrayListOf<NewsItem>()
+
+            var initialList = listOf<NewsItem>()
             newsRecyclerViewAdapter = NewsRecyclerViewAdapter(
                 initialList,
-                mListener,
                 { newsItem: NewsItem -> newsItemClicked(newsItem) }
             )
+
             recyclerView.adapter = newsRecyclerViewAdapter
+
         }
 
         return view
     }
 
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        if (context is OnListFragmentInteractionListener) {
-            mListener = context
-        } else {
-            throw RuntimeException(context!!.toString() + " must implement OnListFragmentInteractionListener")
-        }
-    }
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
 
-    override fun onDetach() {
-        super.onDetach()
-        mListener = null
-    }
+        val viewModelFactory = NewsViewModelFactory(requireContext(), areOnlineNews)
+        newsViewModel = ViewModelProviders.of(requireActivity(), viewModelFactory)
+            .get(NewsViewModel::class.java)
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
-     */
-    interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onListFragmentInteraction(item: DummyItem)
+        newsViewModel.newsObject.observe(this, Observer<Any> { obtainedObject ->
+
+            if (obtainedObject != null) {
+
+                val newsList = if (obtainedObject is NewsResponseWrapper) {
+                    obtainedObject.newsList
+                } else {
+                    obtainedObject as List<NewsItem>
+                }
+
+                newsRecyclerViewAdapter.addAll(newsList)
+
+            }
+
+        })
     }
 
     companion object {
 
-        // TODO: Customize parameter argument names
-        private val ARG_COLUMN_COUNT = "column-count"
+        private val ARG_ONLINE_NEWS = "areOnlineNews"
 
-        // TODO: Customize parameter initialization
-        fun newInstance(columnCount: Int): NewsFragment {
+        fun newInstance(areOnlineNews: Boolean): NewsFragment {
             val fragment = NewsFragment()
             val args = Bundle()
-            args.putInt(ARG_COLUMN_COUNT, columnCount)
+            args.putBoolean(ARG_ONLINE_NEWS, areOnlineNews)
             fragment.arguments = args
             return fragment
         }
+
     }
 
     private fun newsItemClicked(newsItem: NewsItem) {

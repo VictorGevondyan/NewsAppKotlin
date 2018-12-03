@@ -1,12 +1,11 @@
 package am.victor.newsappkotlin.activities
 
-import am.victor.newsapp.fragments.dummy.DummyContent
 import am.victor.newsapp.models.NewsItem
 import am.victor.newsappkotlin.R
 import android.content.Context
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.widget.TextView
 
 class NewsDetailsActivity : AppCompatActivity() {
